@@ -157,13 +157,18 @@ def generate_minesweeper_svg():
             dwg.add(dwg.rect((10 + i*150, legend_y), (15, 15), class_="cell " + cls))
             dwg.add(dwg.text(label, (30 + i*150, legend_y + 12), class_="legend-text"))
         
-        # 6. 添加点击链接
+        # 6. 添加点击链接 - 修复版
+        # 创建一个覆盖整个SVG的透明矩形作为可点击区域
         link = dwg.a(
-            "minesweeper_game.html", 
+            href="minesweeper_game.html", 
             target="_blank",
-            insert=(0, 0),
-            size=(width, height)
+            style="cursor: pointer;"
         )
+        link.add(dwg.rect(
+            insert=(0, 0),
+            size=(width, height),
+            fill="rgba(0,0,0,0)"  # 完全透明
+        ))
         dwg.add(link)
         
         dwg.save()
