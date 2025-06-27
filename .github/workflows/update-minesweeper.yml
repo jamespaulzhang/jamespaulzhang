@@ -28,10 +28,8 @@ jobs:
           pip install svgwrite requests
       
       - name: Set up environment
-        env:
-          GH_TOKEN: ${{ secrets.GH_PAT }}
         run: |
-          echo "GH_TOKEN=$GH_TOKEN" >> $GITHUB_ENV
+          echo "GH_TOKEN=${{ secrets.GH_PAT }}" >> $GITHUB_ENV
           
       - name: Create directories
         run: |
@@ -43,10 +41,7 @@ jobs:
         
       - name: Generate Minesweeper SVG
         run: |
-          # 添加调试输出
-          echo "开始生成扫雷图..."
           python scripts/generate_minesweeper.py
-          echo "SVG生成完成"
           ls -l minesweeper.svg
           
       - name: Commit and push changes
@@ -57,3 +52,4 @@ jobs:
             minesweeper.svg
             assets/styles.css
           branch: main
+          token: ${{ secrets.GH_PAT }}  # 关键修改
