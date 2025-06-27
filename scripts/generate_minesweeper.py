@@ -1,6 +1,7 @@
 import os
 import random
 import sys
+import json
 from datetime import datetime
 import svgwrite
 
@@ -23,6 +24,7 @@ MINE_PROB_COMMIT = 0.1     # 有commit时的地雷概率
 # 修复路径
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SVG_FILE = os.path.join(BASE_DIR, "minesweeper.svg")
+JSON_FILE = os.path.join(BASE_DIR, "minesweeper.json")  # 新增JSON文件保存布局
 STYLE_FILE = os.path.join(BASE_DIR, "assets", "styles.css")
 
 def generate_minesweeper_svg():
@@ -30,6 +32,7 @@ def generate_minesweeper_svg():
     try:
         print(f"开始生成扫雷图，用户: {USERNAME}")
         print(f"SVG文件路径: {SVG_FILE}")
+        print(f"JSON文件路径: {JSON_FILE}")
         print(f"样式文件路径: {STYLE_FILE}")
         
         # 1. 获取贡献数据
@@ -88,9 +91,9 @@ def generate_minesweeper_svg():
         y_offset = 40
         
         # 首先创建完整的地雷网格
-        for y, week in enumerate(contributions):
+        for week_index, week in enumerate(contributions):
             row = []
-            for x, count in enumerate(week):
+            for day_index, count in enumerate(week):
                 # 确定格子类型
                 if count == 0:
                     cell_type = "mine" if random.random() < MINE_PROB_NO_COMMIT else "empty"
@@ -103,14 +106,28 @@ def generate_minesweeper_svg():
         for i, row in enumerate(mine_grid):
             print(f"行 {i+1}: {row}")
         
-        # 然后绘制所有格子并计算邻居
-        for y in range(len(mine_grid)):
-            for x in range(7):
-                cell_type = mine_grid[y][x]
+        # 保存地雷布局到JSON文件（用于HTML游戏）
+        with open(JSON_FILE, "w") as f:
+            json.dump({
+                "layout": mine_grid,
+                "last_updated": datetime.utcnow().isoformat()
+            }, f)
+        print(f"地雷布局已保存到 {JSON_FILE}")
+        
+        # 然后绘制所有格子并计算邻居 - 修复坐标问题
+        for week_index in range(len(mine_grid)):  # 周索引 (0-52)
+            for day_index in range(7):  # 天索引 (0-6)
+                cell_type = mine_grid[week_index][day_index]
+                
+                # 计算正确位置: 
+                #   x轴 = 周索引 * CELL_SIZE (水平方向)
+                #   y轴 = 天索引 * CELL_SIZE (垂直方向)
+                x_pos = week_index * CELL_SIZE + padding
+                y_pos = day_index * CELL_SIZE + y_offset
                 
                 # 绘制格子
                 rect = dwg.rect(
-                    (x * CELL_SIZE + padding, y * CELL_SIZE + y_offset),
+                    (x_pos, y_pos),
                     (CELL_SIZE - 2, CELL_SIZE - 2),
                     class_=f"cell {cell_type}"
                 )
@@ -119,28 +136,31 @@ def generate_minesweeper_svg():
                 # 添加内容
                 if cell_type == "mine":
                     text = dwg.text("💣", 
-                        insert=(x * CELL_SIZE + padding + CELL_SIZE/2 - 6, 
-                                y * CELL_SIZE + y_offset + CELL_SIZE/2 + 6),
+                        insert=(x_pos + CELL_SIZE/2 - 6, 
+                                y_pos + CELL_SIZE/2 + 6),
                         class_="emoji"
                     )
                     dwg.add(text)
                 else:
                     # 计算周围地雷数
                     neighbors = 0
-                    for dy in [-1, 0, 1]:
-                        for dx in [-1, 0, 1]:
-                            if dx == 0 and dy == 0:
+                    for d_week in [-1, 0, 1]:  # 周偏移
+                        for d_day in [-1, 0, 1]:  # 天偏移
+                            if d_week == 0 and d_day == 0:
                                 continue
-                            ny, nx = y + dy, x + dx
+                            
+                            n_week = week_index + d_week
+                            n_day = day_index + d_day
+                            
                             # 确保索引在有效范围内
-                            if 0 <= ny < len(mine_grid) and 0 <= nx < 7:
-                                if mine_grid[ny][nx] == "mine":
+                            if 0 <= n_week < len(mine_grid) and 0 <= n_day < 7:
+                                if mine_grid[n_week][n_day] == "mine":
                                     neighbors += 1
                     
                     if neighbors > 0:
                         text = dwg.text(str(neighbors),
-                            insert=(x * CELL_SIZE + padding + CELL_SIZE/2, 
-                                    y * CELL_SIZE + y_offset + CELL_SIZE/2 + 6),
+                            insert=(x_pos + CELL_SIZE/2, 
+                                    y_pos + CELL_SIZE/2 + 6),
                             class_=f"number num-{min(neighbors, 8)}"
                         )
                         dwg.add(text)
@@ -157,19 +177,17 @@ def generate_minesweeper_svg():
             dwg.add(dwg.rect((10 + i*150, legend_y), (15, 15), class_="cell " + cls))
             dwg.add(dwg.text(label, (30 + i*150, legend_y + 12), class_="legend-text"))
         
-        # 6. 添加点击链接 - 修复版
-        # 创建一个覆盖整个SVG的透明矩形作为可点击区域
+        # 6. 添加点击链接
         link = dwg.a(
             href="minesweeper_game.html", 
             target="_blank",
             style="cursor: pointer;"
         )
-        # 使用有效的透明填充值
         link.add(dwg.rect(
             insert=(0, 0),
             size=(width, height),
-            fill="none",  # 使用SVG标准值表示无填充
-            opacity="0"    # 完全透明
+            fill="none",
+            opacity="0"
         ))
         dwg.add(link)
         
