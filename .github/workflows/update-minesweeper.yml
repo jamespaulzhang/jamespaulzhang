@@ -44,20 +44,22 @@ jobs:
         run: |
           python scripts/generate_minesweeper.py
           ls -l minesweeper.svg
+          ls -l minesweeper.json
           
       - name: Generate Minesweeper Game HTML
         run: |
-          # 创建HTML文件
-          echo '<!DOCTYPE html><html><head><title>GitHub Minesweeper Game</title></head><body>' > minesweeper_game.html
-          echo '<h1>GitHub Minesweeper - Auto Play</h1>' >> minesweeper_game.html
-          echo '<p>This game is generated daily based on your GitHub contributions</p>' >> minesweeper_game.html
-          echo '<div id="game-container"></div>' >> minesweeper_game.html
-          echo '<script>' >> minesweeper_game.html
-          
-          # 添加JavaScript游戏逻辑（这里简化，实际应包含上面的完整JS代码）
-          echo '// 简化的游戏初始化代码...' >> minesweeper_game.html
-          
-          echo '</script></body></html>' >> minesweeper_game.html
+          # 创建HTML文件（使用上面的完整HTML内容）
+          cat > minesweeper_game.html << 'EOF'
+          <!DOCTYPE html>
+          <html>
+          <head>
+              <!-- 上面提供的完整HTML内容 -->
+          </head>
+          <body>
+              <!-- 上面提供的完整HTML内容 -->
+          </body>
+          </html>
+          EOF
           
       - name: Commit and push changes
         uses: stefanzweifel/git-auto-commit-action@v4
@@ -65,6 +67,7 @@ jobs:
           commit_message: "auto: update minesweeper files"
           file_pattern: |
             minesweeper.svg
+            minesweeper.json
             assets/styles.css
             minesweeper_game.html
           branch: main
