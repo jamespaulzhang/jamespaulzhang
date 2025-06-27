@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GitHub Minesweeper - Auto Play</title>
+    <style>
+        /* 基础样式 */
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f0f0f0;
+        }
+        
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        
+        .grid {
+            display: inline-block;
+            margin: 20px auto;
+        }
+        
+        .row {
+            display: flex;
+        }
+        
+        .cell {
+            width: 20px;
+            height: 20px;
+            border: 1px solid #ccc;
+            background-color: #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        .cell.revealed {
+            background-color: #d0d0d0;
+        }
+        
+        .cell.mine {
+            background-color: #ff6b6b;
+        }
+        
+        .cell.flag {
+            background-color: #4ecdc4;
+        }
+        
+        .controls {
+            margin: 20px;
+        }
+        
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 0 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="title">GitHub Minesweeper - Auto Play</div>
+    
+    <div class="controls">
+        <button id="startBtn">开始自动玩</button>
+        <button id="resetBtn">重置游戏</button>
+    </div>
+    
+    <div class="grid" id="grid"></div>
+    
+    <script>
+        // 游戏配置
+        const ROWS = 7;  // 一周7天
+        const COLS = 53; // 53周
+        const MINE_PROBABILITY = 0.15;
+        
+        // 游戏状态
+        let grid = [];
+        let mines = [];
+        let gameStarted = false;
+        let gameOver = false;
+        
+        // DOM元素
+        const gridElement = document.getElementById('grid');
+        const startBtn = document.getElementById('startBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        
+        // 初始化游戏
+        function initGame() {
+            gridElement.innerHTML = '';
+            grid = [];
+            mines = [];
+            gameStarted = false;
+            gameOver = false;
+            
+            // 创建网格
+            for (let row = 0; row < ROWS; row++) {
+                const rowElement = document.createElement('div');
+                rowElement.className = 'row';
+                grid[row] = [];
+                
+                for (let col = 0; col < COLS; col++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    cell.dataset.row = row;
+                    cell.dataset.col = col;
+                    
+                    // 添加点击事件
+                    cell.addEventListener('click', () => revealCell(row, col));
+                    cell.addEventListener('contextmenu', (e) => {
+                        e.preventDefault();
+                        toggleFlag(row, col);
+                    });
+                    
+                    rowElement.appendChild(cell);
+                    grid[row][col] = {
+                        element: cell,
+                        isMine: false,
+                        isRevealed: false,
+                        isFlagged: false,
+                        neighborMines: 0
+                    };
+                }
+                
+                gridElement.appendChild(rowElement);
+            }
+        }
+        
+        // 放置地雷
+        function placeMines(firstRow, firstCol) {
+            mines = [];
+            
+            for (let row = 0; row < ROWS; row++) {
+                for (let col = 0; col < COLS; col++) {
+                    // 跳过第一次点击的位置
+                    if (row === firstRow && col === firstCol) continue;
+                    
+                    // 随机放置地雷
+                    if (Math.random() < MINE_PROBABILITY) {
+                        grid[row][col].isMine = true;
+                        mines.push({row, col});
+                        
+                        // 更新邻居计数
+                        updateNeighborCounts(row, col);
+                    }
+                }
+            }
+        }
+        
+        // 更新邻居地雷计数
+        function updateNeighborCounts(row, col) {
+            for (let r = Math.max(0, row - 1); r <= Math.min(ROWS - 1, row + 1); r++) {
+                for (let c = Math.max(0, col - 1); c <= Math.min(COLS - 1, col + 1); c++) {
+                    if (!(r === row && c === col)) {
+                        grid[r][c].neighborMines++;
+                    }
+                }
+            }
+        }
+        
+        // 揭示格子
+        function revealCell(row, col) {
+            if (gameOver || grid[row][col].isRevealed || grid[row][col].isFlagged) return;
+            
+            // 如果是第一次点击，放置地雷
+            if (!gameStarted) {
+                gameStarted = true;
+                placeMines(row, col);
+            }
+            
+            const cell = grid[row][col];
+            cell.isRevealed = true;
+            cell.element.classList.add('revealed');
+            
+            if (cell.isMine) {
+                // 踩到地雷
+                cell.element.textContent = '💣';
+                endGame(false);
+                return;
+            }
+            
+            // 显示邻居地雷数
+            if (cell.neighborMines > 0) {
+                cell.element.textContent = cell.neighborMines;
+                cell.element.style.color = getNumberColor(cell.neighborMines);
+            } else {
+                // 如果是空区域，递归揭示周围格子
+                revealNeighbors(row, col);
+            }
+            
+            // 检查是否获胜
+            checkWin();
+        }
+        
+        // 递归揭示邻居
+        function revealNeighbors(row, col) {
+            for (let r = Math.max(0, row - 1); r <= Math.min(ROWS - 1, row + 1); r++) {
+                for (let c = Math.max(0, col - 1); c <= Math.min(COLS - 1, col + 1); c++) {
+                    if (!grid[r][c].isRevealed && !grid[r][c].isFlagged) {
+                        revealCell(r, c);
+                    }
+                }
+            }
+        }
+        
+        // 切换旗帜标记
+        function toggleFlag(row, col) {
+            if (gameOver || grid[row][col].isRevealed) return;
+            
+            const cell = grid[row][col];
+            cell.isFlagged = !cell.isFlagged;
+            
+            if (cell.isFlagged) {
+                cell.element.textContent = '🚩';
+                cell.element.classList.add('flag');
+            } else {
+                cell.element.textContent = '';
+                cell.element.classList.remove('flag');
+            }
+        }
+        
+        // 自动玩扫雷
+        function autoPlay() {
+            if (gameOver || !gameStarted) return;
+            
+            // 简单策略：随机点击一个未揭示的格子
+            const unrevealedCells = [];
+            
+            for (let row = 0; row < ROWS; row++) {
+                for (let col = 0; col < COLS; col++) {
+                    if (!grid[row][col].isRevealed && !grid[row][col].isFlagged) {
+                        unrevealedCells.push({row, col});
+                    }
+                }
+            }
+            
+            if (unrevealedCells.length > 0) {
+                // 随机选择一个格子
+                const randomIndex = Math.floor(Math.random() * unrevealedCells.length);
+                const {row, col} = unrevealedCells[randomIndex];
+                
+                // "点击"该格子
+                revealCell(row, col);
+                
+                // 继续自动玩
+                if (!gameOver) {
+                    setTimeout(autoPlay, 50); // 50毫秒延迟
+                }
+            }
+        }
+        
+        // 检查获胜条件
+        function checkWin() {
+            let allNonMinesRevealed = true;
+            
+            for (let row = 0; row < ROWS; row++) {
+                for (let col = 0; col < COLS; col++) {
+                    const cell = grid[row][col];
+                    if (!cell.isMine && !cell.isRevealed) {
+                        allNonMinesRevealed = false;
+                        break;
+                    }
+                }
+                if (!allNonMinesRevealed) break;
+            }
+            
+            if (allNonMinesRevealed) {
+                endGame(true);
+            }
+        }
+        
+        // 结束游戏
+        function endGame(isWin) {
+            gameOver = true;
+            
+            // 揭示所有地雷
+            mines.forEach(mine => {
+                const cell = grid[mine.row][mine.col];
+                if (!cell.isRevealed && !cell.isFlagged) {
+                    cell.element.textContent = '💣';
+                    cell.element.classList.add('revealed');
+                }
+            });
+            
+            alert(isWin ? '恭喜你赢了！' : '游戏结束！你踩到地雷了！');
+        }
+        
+        // 获取数字颜色
+        function getNumberColor(num) {
+            const colors = [
+                '#0000FF', // 1 - 蓝色
+                '#008000', // 2 - 绿色
+                '#FF0000', // 3 - 红色
+                '#000080', // 4 - 深蓝
+                '#800000', // 5 - 深红
+                '#008080', // 6 - 青色
+                '#000000', // 7 - 黑色
+                '#808080'  // 8 - 灰色
+            ];
+            return colors[num - 1] || '#000000';
+        }
+        
+        // 事件监听
+        startBtn.addEventListener('click', () => {
+            if (!gameStarted) {
+                // 确保游戏已开始
+                revealCell(0, 0);
+            }
+            
+            // 开始自动玩
+            autoPlay();
+        });
+        
+        resetBtn.addEventListener('click', initGame);
+        
+        // 初始化游戏
+        initGame();
+    </script>
+</body>
+</html>
