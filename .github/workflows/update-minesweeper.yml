@@ -43,8 +43,9 @@ jobs:
         
       - name: Generate Minesweeper SVG
         run: |
-          # 添加调试输出
           echo "开始生成扫雷图..."
+          # 设置工作目录为仓库根目录
+          cd ${{ github.workspace }}
           python scripts/generate_minesweeper.py
           echo "SVG生成完成"
           ls -l minesweeper.svg
