@@ -2,7 +2,9 @@
 
 > Commit越多地雷越少！每天自动更新
 
-![GitHub Minesweeper](./minesweeper.svg)
+[![GitHub Minesweeper](minesweeper.svg)](minesweeper_game.html)
+
+点击上面的图片玩自动扫雷游戏！游戏每天根据我的GitHub贡献数据自动更新。
 
 ### 游戏规则
 - 💣 红色格子：地雷（当天无commit）
