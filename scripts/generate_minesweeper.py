@@ -5,7 +5,7 @@ from datetime import datetime
 import svgwrite
 
 # 修复导入问题
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 try:
     from github_api import get_contributions
