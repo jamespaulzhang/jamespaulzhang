@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<svg baseProfile="full" height="225px" version="1.1" viewBox="0,0,195,225" width="195px" xmlns="http://www.w3.org/2000/svg" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:xlink="http://www.w3.org/1999/xlink"><defs><style type="text/css"><![CDATA[/* 基础样式 */
+.title {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 16px;
+    fill: #2c3e50;
+    font-weight: bold;
+}
+
+.cell {
+    stroke: #34495e;
+    stroke-width: 1;
+    rx: 4;
+    ry: 4;
+    transition: all 0.3s ease;
+}
+
+/* 格子类型 */
+.cell.safe { fill: #2ecc71; }
+.cell.mine { fill: #e74c3c; }
+.cell.empty { fill: #3498db; }
+
+/* 数字样式 */
+.number {
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    text-anchor: middle;
+    font-size: 14px;
+    fill: #2c3e50;
+}
+
+/* 数字颜色 */
+.num-1 { fill: #3498db; }
+.num-2 { fill: #2ecc71; }
+.num-3 { fill: #e74c3c; }
+.num-4 { fill: #9b59b6; }
+.num-5 { fill: #e67e22; }
+.num-6 { fill: #1abc9c; }
+.num-7 { fill: #d35400; }
+.num-8 { fill: #2c3e50; }
+
+.emoji {
+    font-size: 16px;
+    text-anchor: middle;
+}
+
+.legend-text {
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    fill: #34495e;
+}
+]]></style></defs><text class="title" text-anchor="middle" x="97.5" y="20">GitHub Minesweeper - jamespaulzhang (Updated: 2025-06-27 07:40 UTC)</text><rect class="cell mine" height="23" width="23" x="10" y="40" /><text class="emoji" x="16.5" y="58.5">💣</text><rect class="cell empty" height="23" width="23" x="35" y="40" /><text class="number num-1" x="47.5" y="58.5">1</text><rect class="cell empty" height="23" width="23" x="60" y="40" /><text class="number num-2" x="72.5" y="58.5">2</text><rect class="cell mine" height="23" width="23" x="85" y="40" /><text class="emoji" x="91.5" y="58.5">💣</text><rect class="cell mine" height="23" width="23" x="110" y="40" /><text class="emoji" x="116.5" y="58.5">💣</text><rect class="cell mine" height="23" width="23" x="135" y="40" /><text class="emoji" x="141.5" y="58.5">💣</text><rect class="cell mine" height="23" width="23" x="160" y="40" /><text class="emoji" x="166.5" y="58.5">💣</text><rect class="cell safe" height="23" width="23" x="10" y="65" /><text class="number num-2" x="22.5" y="83.5">2</text><rect class="cell safe" height="23" width="23" x="35" y="65" /><text class="number num-2" x="47.5" y="83.5">2</text><rect class="cell safe" height="23" width="23" x="60" y="65" /><text class="number num-2" x="72.5" y="83.5">2</text><rect class="cell mine" height="23" width="23" x="85" y="65" /><text class="emoji" x="91.5" y="83.5">💣</text><rect class="cell safe" height="23" width="23" x="110" y="65" /><text class="number num-7" x="122.5" y="83.5">7</text><rect class="cell mine" height="23" width="23" x="135" y="65" /><text class="emoji" x="141.5" y="83.5">💣</text><rect class="cell safe" height="23" width="23" x="160" y="65" /><text class="number num-5" x="172.5" y="83.5">5</text><rect class="cell mine" height="23" width="23" x="10" y="90" /><text class="emoji" x="16.5" y="108.5">💣</text><rect class="cell empty" height="23" width="23" x="35" y="90" /><text class="number num-4" x="47.5" y="108.5">4</text><rect class="cell empty" height="23" width="23" x="60" y="90" /><text class="number num-3" x="72.5" y="108.5">3</text><rect class="cell empty" height="23" width="23" x="85" y="90" /><text class="number num-4" x="97.5" y="108.5">4</text><rect class="cell mine" height="23" width="23" x="110" y="90" /><text class="emoji" x="116.5" y="108.5">💣</text><rect class="cell mine" height="23" width="23" x="135" y="90" /><text class="emoji" x="141.5" y="108.5">💣</text><rect class="cell mine" height="23" width="23" x="160" y="90" /><text class="emoji" x="166.5" y="108.5">💣</text><rect class="cell mine" height="23" width="23" x="10" y="115" /><text class="emoji" x="16.5" y="133.5">💣</text><rect class="cell mine" height="23" width="23" x="35" y="115" /><text class="emoji" x="41.5" y="133.5">💣</text><rect class="cell mine" height="23" width="23" x="60" y="115" /><text class="emoji" x="66.5" y="133.5">💣</text><rect class="cell empty" height="23" width="23" x="85" y="115" /><text class="number num-6" x="97.5" y="133.5">6</text><rect class="cell mine" height="23" width="23" x="110" y="115" /><text class="emoji" x="116.5" y="133.5">💣</text><rect class="cell mine" height="23" width="23" x="135" y="115" /><text class="emoji" x="141.5" y="133.5">💣</text><rect class="cell mine" height="23" width="23" x="160" y="115" /><text class="emoji" x="166.5" y="133.5">💣</text><rect class="cell safe" height="23" width="23" x="10" y="140" /><text class="number num-4" x="22.5" y="158.5">4</text><rect class="cell mine" height="23" width="23" x="35" y="140" /><text class="emoji" x="41.5" y="158.5">💣</text><rect class="cell mine" height="23" width="23" x="60" y="140" /><text class="emoji" x="66.5" y="158.5">💣</text><rect class="cell mine" height="23" width="23" x="85" y="140" /><text class="emoji" x="91.5" y="158.5">💣</text><rect class="cell mine" height="23" width="23" x="110" y="140" /><text class="emoji" x="116.5" y="158.5">💣</text><rect class="cell mine" height="23" width="23" x="135" y="140" /><text class="emoji" x="141.5" y="158.5">💣</text><rect class="cell mine" height="23" width="23" x="160" y="140" /><text class="emoji" x="166.5" y="158.5">💣</text><rect class="cell empty" height="23" width="23" x="10" y="165" /><text class="number num-2" x="22.5" y="183.5">2</text><rect class="cell mine" height="23" width="23" x="35" y="165" /><text class="emoji" x="41.5" y="183.5">💣</text><rect class="cell mine" height="23" width="23" x="60" y="165" /><text class="emoji" x="66.5" y="183.5">💣</text><rect class="cell mine" height="23" width="23" x="85" y="165" /><text class="emoji" x="91.5" y="183.5">💣</text><rect class="cell mine" height="23" width="23" x="110" y="165" /><text class="emoji" x="116.5" y="183.5">💣</text><rect class="cell mine" height="23" width="23" x="135" y="165" /><text class="emoji" x="141.5" y="183.5">💣</text><rect class="cell mine" height="23" width="23" x="160" y="165" /><text class="emoji" x="166.5" y="183.5">💣</text><rect class="cell safe" height="23" width="23" x="10" y="190" /><text class="number num-1" x="22.5" y="208.5">1</text><rect class="cell safe" height="23" width="23" x="35" y="190" /><text class="number num-2" x="47.5" y="208.5">2</text><rect class="cell safe" height="23" width="23" x="60" y="190" /><text class="number num-3" x="72.5" y="208.5">3</text><rect class="cell safe" height="23" width="23" x="85" y="190" /><text class="number num-3" x="97.5" y="208.5">3</text><rect class="cell safe" height="23" width="23" x="110" y="190" /><text class="number num-3" x="122.5" y="208.5">3</text><rect class="cell empty" height="23" width="23" x="135" y="190" /><text class="number num-3" x="147.5" y="208.5">3</text><rect class="cell safe" height="23" width="23" x="160" y="190" /><text class="number num-2" x="172.5" y="208.5">2</text><rect class="cell safe" height="15" width="15" x="10" y="225" /><text class="legend-text" x="30" y="237">安全区 (有commit)</text><rect class="cell mine" height="15" width="15" x="160" y="225" /><text class="legend-text" x="180" y="237">地雷区 (无commit)</text><rect class="cell empty" height="15" width="15" x="310" y="225" /><text class="legend-text" x="330" y="237">空白区</text></svg>
