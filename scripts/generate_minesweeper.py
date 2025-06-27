@@ -164,10 +164,12 @@ def generate_minesweeper_svg():
             target="_blank",
             style="cursor: pointer;"
         )
+        # 使用有效的透明填充值
         link.add(dwg.rect(
             insert=(0, 0),
             size=(width, height),
-            fill="rgba(0,0,0,0)"  # 完全透明
+            fill="none",  # 使用SVG标准值表示无填充
+            opacity="0"    # 完全透明
         ))
         dwg.add(link)
         
