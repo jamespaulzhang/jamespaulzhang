@@ -26,6 +26,10 @@ STYLE_FILE = os.path.join(BASE_DIR, "assets", "styles.css")
 MINE_PROB_NO_COMMIT = 0.7  # 无commit时的地雷概率
 MINE_PROB_COMMIT = 0.1     # 有commit时的地雷概率
 
+# 配置参数 - 顶部添加
+WEEKS_TO_SHOW = 53  # 完整一年约53周
+CELL_SIZE = 15      # 缩小格子尺寸以适应更多周数
+
 def generate_minesweeper_svg():
     """生成扫雷风格贡献图"""
     try:
@@ -38,8 +42,8 @@ def generate_minesweeper_svg():
         weeks = calendar["weeks"]
         print(f"获取到 {len(weeks)} 周数据")
         
-        # 提取最近7周数据
-        recent_weeks = weeks[-7:]
+        # 提取最近53周数据
+        recent_weeks = weeks[-WEEKS_TO_SHOW:]
         contributions = []
         
         for week in recent_weeks:
@@ -58,10 +62,9 @@ def generate_minesweeper_svg():
             print(f"周 {i+1}: {week}")
         
         # 2. 创建SVG画布
-        cell_size = 25
         padding = 10
-        width = 7 * cell_size + 2 * padding
-        height = 7 * cell_size + 2 * padding + 30  # 额外空间用于标题
+        width = WEEKS_TO_SHOW * CELL_SIZE + 2 * padding
+        height = 7 * CELL_SIZE + 2 * padding + 50
         
         dwg = svgwrite.Drawing(SVG_FILE, (f"{width}px", f"{height}px"))
         dwg.viewbox(0, 0, width, height)
@@ -148,7 +151,7 @@ def generate_minesweeper_svg():
                         dwg.add(text)
         
         # 5. 添加图例
-        legend_y = y_offset + 7 * cell_size + 10
+        legend_y = y_offset + 7 * CELL_SIZE + 10
         legend_items = [
             ("safe", "安全区 (有commit)", "#2ecc71"),
             ("mine", "地雷区 (无commit)", "#e74c3c"),
