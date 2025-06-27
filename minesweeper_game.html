@@ -69,6 +69,7 @@
         
         .controls {
             margin: 20px;
+            display: none; /* 隐藏控制按钮 */
         }
         
         button {
@@ -190,7 +191,7 @@
                 gridElement.appendChild(rowElement);
             }
             
-            statusElement.textContent = '点击"开始自动玩"按钮开始游戏';
+            statusElement.textContent = '游戏已初始化，即将开始自动玩...';
         }
         
         // 放置地雷
@@ -392,10 +393,23 @@
             autoPlay();
         });
         
-        resetBtn.addEventListener('click', initGame);
+        resetBtn.addEventListener('click', () => {
+            initGame().then(() => {
+                // 重置后自动开始
+                setTimeout(() => {
+                    startBtn.click();
+                }, 500);
+            });
+        });
         
-        // 初始化游戏
-        initGame();
+        // 初始化游戏并自动开始
+        initGame().then(() => {
+            // 等待500毫秒确保游戏初始化完成
+            setTimeout(() => {
+                // 模拟点击开始按钮
+                startBtn.click();
+            }, 500);
+        });
     </script>
 </body>
 </html>
