@@ -4,31 +4,26 @@ import sys
 from datetime import datetime
 import svgwrite
 
-# 修复导入问题 - 添加路径处理
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# 修复导入问题
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 try:
     from github_api import get_contributions
 except ImportError:
-    # 如果从不同位置运行时的后备方案
     from scripts.github_api import get_contributions
 
 # 配置参数
 USERNAME = os.getenv('GITHUB_USER', 'jamespaulzhang')
 TOKEN = os.getenv('GH_TOKEN')
-
-# 修复路径语法错误 - 使用更简洁的方式
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SVG_FILE = os.path.join(BASE_DIR, "minesweeper.svg")
-STYLE_FILE = os.path.join(BASE_DIR, "assets", "styles.css")
-
-# 难度设置
+WEEKS_TO_SHOW = 53  # 完整一年约53周
+CELL_SIZE = 15      # 格子尺寸
 MINE_PROB_NO_COMMIT = 0.7  # 无commit时的地雷概率
 MINE_PROB_COMMIT = 0.1     # 有commit时的地雷概率
 
-# 配置参数 - 顶部添加
-WEEKS_TO_SHOW = 53  # 完整一年约53周
-CELL_SIZE = 15      # 缩小格子尺寸以适应更多周数
+# 修复路径
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+SVG_FILE = os.path.join(BASE_DIR, "minesweeper.svg")
+STYLE_FILE = os.path.join(BASE_DIR, "assets", "styles.css")
 
 def generate_minesweeper_svg():
     """生成扫雷风格贡献图"""
@@ -64,7 +59,7 @@ def generate_minesweeper_svg():
         # 2. 创建SVG画布
         padding = 10
         width = WEEKS_TO_SHOW * CELL_SIZE + 2 * padding
-        height = 7 * CELL_SIZE + 2 * padding + 50
+        height = 7 * CELL_SIZE + 2 * padding + 50  # 额外空间用于标题和图例
         
         dwg = svgwrite.Drawing(SVG_FILE, (f"{width}px", f"{height}px"))
         dwg.viewbox(0, 0, width, height)
@@ -109,14 +104,14 @@ def generate_minesweeper_svg():
             print(f"行 {i+1}: {row}")
         
         # 然后绘制所有格子并计算邻居
-        for y in range(len(contributions)):
+        for y in range(len(mine_grid)):
             for x in range(7):
                 cell_type = mine_grid[y][x]
                 
                 # 绘制格子
                 rect = dwg.rect(
-                    (x * cell_size + padding, y * cell_size + y_offset),
-                    (cell_size - 2, cell_size - 2),
+                    (x * CELL_SIZE + padding, y * CELL_SIZE + y_offset),
+                    (CELL_SIZE - 2, CELL_SIZE - 2),
                     class_=f"cell {cell_type}"
                 )
                 dwg.add(rect)
@@ -124,8 +119,8 @@ def generate_minesweeper_svg():
                 # 添加内容
                 if cell_type == "mine":
                     text = dwg.text("💣", 
-                        insert=(x * cell_size + padding + cell_size/2 - 6, 
-                                y * cell_size + y_offset + cell_size/2 + 6),
+                        insert=(x * CELL_SIZE + padding + CELL_SIZE/2 - 6, 
+                                y * CELL_SIZE + y_offset + CELL_SIZE/2 + 6),
                         class_="emoji"
                     )
                     dwg.add(text)
@@ -144,8 +139,8 @@ def generate_minesweeper_svg():
                     
                     if neighbors > 0:
                         text = dwg.text(str(neighbors),
-                            insert=(x * cell_size + padding + cell_size/2, 
-                                    y * cell_size + y_offset + cell_size/2 + 6),
+                            insert=(x * CELL_SIZE + padding + CELL_SIZE/2, 
+                                    y * CELL_SIZE + y_offset + CELL_SIZE/2 + 6),
                             class_=f"number num-{min(neighbors, 8)}"
                         )
                         dwg.add(text)
@@ -161,6 +156,15 @@ def generate_minesweeper_svg():
         for i, (cls, label, color) in enumerate(legend_items):
             dwg.add(dwg.rect((10 + i*150, legend_y), (15, 15), class_="cell " + cls))
             dwg.add(dwg.text(label, (30 + i*150, legend_y + 12), class_="legend-text"))
+        
+        # 6. 添加点击链接
+        link = dwg.a(
+            "minesweeper_game.html", 
+            target="_blank",
+            insert=(0, 0),
+            size=(width, height)
+        )
+        dwg.add(link)
         
         dwg.save()
         print("SVG生成成功！")
