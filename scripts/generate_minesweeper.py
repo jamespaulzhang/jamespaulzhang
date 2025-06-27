@@ -1,15 +1,23 @@
 import os
 import random
-import time
+import sys
 from datetime import datetime
 import svgwrite
-from .github_api import get_contributions
+
+# 修复导入问题 - 添加路径处理
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+try:
+    from github_api import get_contributions
+except ImportError:
+    # 如果从不同位置运行时的后备方案
+    from scripts.github_api import get_contributions
 
 # 配置参数
 USERNAME = os.getenv('GITHUB_USER', 'jamespaulzhang')
 TOKEN = os.getenv('GH_TOKEN')
-SVG_FILE = "../minesweeper.svg"
-STYLE_FILE = "../assets/styles.css"
+SVG_FILE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "minesweeper.svg")
+STYLE_FILE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "assets", "styles.css")
 
 # 难度设置
 MINE_PROB_NO_COMMIT = 0.7  # 无commit时的地雷概率
