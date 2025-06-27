@@ -5,7 +5,7 @@ from datetime import datetime
 import svgwrite
 
 # 修复导入问题 - 添加路径处理
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 try:
     from github_api import get_contributions
@@ -16,8 +16,8 @@ except ImportError:
 # 配置参数
 USERNAME = os.getenv('GITHUB_USER', 'jamespaulzhang')
 TOKEN = os.getenv('GH_TOKEN')
-SVG_FILE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "minesweeper.svg")
-STYLE_FILE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "assets", "styles.css")
+SVG_FILE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__)), "minesweeper.svg")
+STYLE_FILE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__)), "assets", "styles.css")
 
 # 难度设置
 MINE_PROB_NO_COMMIT = 0.7  # 无commit时的地雷概率
@@ -26,9 +26,14 @@ MINE_PROB_COMMIT = 0.1     # 有commit时的地雷概率
 def generate_minesweeper_svg():
     """生成扫雷风格贡献图"""
     try:
+        print(f"开始生成扫雷图，用户: {USERNAME}")
+        print(f"SVG文件路径: {SVG_FILE}")
+        print(f"样式文件路径: {STYLE_FILE}")
+        
         # 1. 获取贡献数据
         calendar = get_contributions(USERNAME, TOKEN)
         weeks = calendar["weeks"]
+        print(f"获取到 {len(weeks)} 周数据")
         
         # 提取最近7周数据
         recent_weeks = weeks[-7:]
@@ -45,6 +50,10 @@ def generate_minesweeper_svg():
                     print(f"日期解析错误: {e}")
             contributions.append(week_data)
         
+        print("贡献数据:")
+        for i, week in enumerate(contributions):
+            print(f"周 {i+1}: {week}")
+        
         # 2. 创建SVG画布
         cell_size = 25
         padding = 10
@@ -59,6 +68,9 @@ def generate_minesweeper_svg():
             with open(STYLE_FILE) as f:
                 css = f.read()
             dwg.defs.add(dwg.style(css))
+            print("已加载样式文件")
+        else:
+            print(f"警告: 样式文件不存在 {STYLE_FILE}")
         
         # 3. 添加标题
         last_updated = datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC")
@@ -86,6 +98,10 @@ def generate_minesweeper_svg():
                 row.append(cell_type)
             mine_grid.append(row)
         
+        print("地雷网格:")
+        for i, row in enumerate(mine_grid):
+            print(f"行 {i+1}: {row}")
+        
         # 然后绘制所有格子并计算邻居
         for y in range(len(contributions)):
             for x in range(7):
@@ -108,7 +124,7 @@ def generate_minesweeper_svg():
                     )
                     dwg.add(text)
                 else:
-                    # 计算周围地雷数（修复索引错误）
+                    # 计算周围地雷数
                     neighbors = 0
                     for dy in [-1, 0, 1]:
                         for dx in [-1, 0, 1]:
@@ -142,13 +158,21 @@ def generate_minesweeper_svg():
         
         dwg.save()
         print("SVG生成成功！")
+        return True
     
     except Exception as e:
+        import traceback
         print(f"生成SVG时出错: {e}")
+        print(traceback.format_exc())
         # 创建错误信息SVG
         error_dwg = svgwrite.Drawing(SVG_FILE, ("400px", "100px"))
         error_dwg.add(error_dwg.text(f"Error: {str(e)}", insert=(20, 50), fill="red"))
         error_dwg.save()
+        return False
 
 if __name__ == "__main__":
-    generate_minesweeper_svg()
+    if generate_minesweeper_svg():
+        print("扫雷图生成成功！")
+    else:
+        print("扫雷图生成失败！")
+        sys.exit(1)
