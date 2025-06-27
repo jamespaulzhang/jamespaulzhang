@@ -16,8 +16,11 @@ except ImportError:
 # 配置参数
 USERNAME = os.getenv('GITHUB_USER', 'jamespaulzhang')
 TOKEN = os.getenv('GH_TOKEN')
-SVG_FILE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__)), "minesweeper.svg")
-STYLE_FILE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__)), "assets", "styles.css")
+
+# 修复路径语法错误 - 使用更简洁的方式
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+SVG_FILE = os.path.join(BASE_DIR, "minesweeper.svg")
+STYLE_FILE = os.path.join(BASE_DIR, "assets", "styles.css")
 
 # 难度设置
 MINE_PROB_NO_COMMIT = 0.7  # 无commit时的地雷概率
